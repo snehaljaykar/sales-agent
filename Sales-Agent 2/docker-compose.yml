@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  qdrant:
+    build:
+      context: .
+      dockerfile: Dockerfile.qdrant
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333" # REST
+      - "6334:6334" # gRPC
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:6333/livez" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    mem_limit: 1G      # max 16 GB RAM
+    cpus: 1.0           # max 8 CPU cores
+
+  flask_server:
+    build: ./flask_server
+    container_name: flask_server
+    restart: unless-stopped
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    volumes:
+      - ./flask_server/data:/app/data
+      - ./transcript:/app/transcript
+    ports:
+      - "5000:5000"
+    mem_limit: 20G       # max 8 GB RAM
+    cpus: 8.0           # max 4 CPU cores
+
+  client:
+    build: ./client
+    container_name: client
+    restart: "no"
+    depends_on:
+      - flask_server
+    mem_limit: 1G       # max 2 GB RAM
+    cpus: 1.0           # max 1 CPU core

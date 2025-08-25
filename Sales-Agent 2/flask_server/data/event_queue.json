@@ -1,0 +1,22 @@
+[
+  {
+    "filename": "1_demo_call.txt",
+    "users": ["AE (Jordan)", "Prospect (Priya – RevOps Director)", "Luis (SE)"],
+    "timestamp": "01-01-2025 10:00:00"
+  },
+  {
+    "filename": "2_pricing_call.txt",
+    "users": ["AE (Jordan)", "Prospect (Priya – RevOps Director)", "Prospect (Dan – Finance VP)", "Maya (Pricing Strategist)"],
+    "timestamp": "02-01-2025 10:00:00"
+  },
+  {
+    "filename": "3_objection_call.txt",
+    "users": ["AE (Jordan)", "Elena (CISO)", "Luis (SE)", "Prospect (Arjun – Security Lead)", "Prospect (Sara – Legal Counsel)", "Prospect (Priya – RevOps Director)"],
+    "timestamp": "03-01-2025 10:00:00"
+  },
+  {
+    "filename": "4_negotiation_call.txt",
+    "users": ["AE (Jordan)", "Maya (Pricing)", "Elena (CISO)", "Asha (VP CS)", "Prospect (Neha – Procurement)", "Prospect (Raghav – CFO)", "Prospect (Sara – Legal)", "Prospect (Priya – RevOps Director)", "Prospect (Arjun – Security Lead)"],
+    "timestamp": "04-01-2025 10:00:00"
+  }
+]

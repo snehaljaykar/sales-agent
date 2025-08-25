@@ -1,0 +1,8 @@
+flask
+pandas
+qdrant-client
+sentence-transformers
+transformers
+torch
+accelerate
+bitsandbytes
