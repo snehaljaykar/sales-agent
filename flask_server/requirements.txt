@@ -1,8 +1,11 @@
-flask
+flask==2.3.3
+werkzeug==2.3.7
 pandas
 qdrant-client
 sentence-transformers
 transformers
 torch
 accelerate
-bitsandbytes
+langchain
+sentencepiece
+requests

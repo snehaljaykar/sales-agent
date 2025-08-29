@@ -59,36 +59,35 @@ def chat_query():
         if not query_text:
             return jsonify({"error": "query is required"}), 400
 
-        user_name = loader.users_df[loader.users_df['user_id'] == int(user_id)].iloc[0]['user_name']
-        logger.info(f"Processing chat query for user {user_id} {user_name}: {query_text}")
+        # Get user name from user_id
+        user_row = loader.users_df[loader.users_df['user_id'] == int(user_id)]
+        if user_row.empty:
+            return jsonify({"error": "Invalid user_id"}), 400
 
-        print(type(llm_utils.query_converter))
-        
-        # Ensure LLM services are initialized
-        if llm_utils.query_converter is None or llm_utils.answer_generator is None:
-            logger.warning("LLM services not initialized, initializing now...")
-            llm_utils.initialize_llm_services()
-        
-        # # Step 1: Convert natural language query to search parameters
-        # search_params = llm_utils.query_converter.convert_to_search_query(query_text, user_name)
-        # logger.info(f"Search parameters: {search_params}")
-        
-        # Step 2: Search Qdrant for relevant documents
-        retrieved_docs = rag_engine.search_transcripts(query_text, user_name, limit=10)
-        logger.info(f"Retrieved {len(retrieved_docs)} documents")
-        
-        # Step 3: Generate answer using LLM + retrieved docs
-        answer = llm_utils.answer_generator.generate_answer(query_text, retrieved_docs, query_text)
-        
+        user_name = user_row.iloc[0]['user_name']
+        logger.info(f"Processing chat query for user {user_id} ({user_name}): {query_text}")
+
+        # Ensure answer generator is initialized
+        if llm_utils.answer_generator is None:
+            logger.warning("Answer generator not initialized, initializing now...")
+            llm_utils.set_rag_engine(rag_engine)
+
+        # Generate answer using the simplified system
+        # The answer generator will handle different query types automatically
+        answer = llm_utils.answer_generator.generate_answer(
+            query=query_text,
+            retrieved_docs=[],  # Answer generator will fetch its own docs as needed
+            user_name=user_name
+        )
+
         return jsonify({
             "answer": answer,
-            "sources": len(retrieved_docs),
-            "search_params": query_text,
-            "documents_found": len(retrieved_docs)
+            "user": user_name,
+            "query": query_text
         })
-        
+
     except Exception as e:
-        logger.error(f"Error in chat_query: {e}")
+        logger.error(f"Error in chat_query: {e}", exc_info=True)
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500
 
 
@@ -113,6 +112,10 @@ if __name__ == "__main__":
     # Initialize LLM services
     llm_utils.initialize_llm_services()
     logger.info("LLM services initialized")
+
+    # Set RAG engine for answer generator after LLM initialization
+    llm_utils.set_rag_engine(rag_engine)
+    logger.info("LLM services initialized with RAG engine")
 
     # Cron job / scheduled run: process all pending files
     loader.process_all_pending()

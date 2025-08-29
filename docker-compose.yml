@@ -31,6 +31,7 @@ services:
     volumes:
       - ./flask_server/data:/app/data
       - ./transcript:/app/transcript
+      - ./model_cache:/root/.cache/huggingface
     ports:
       - "5000:5000"
     mem_limit: 20G       # max 8 GB RAM
